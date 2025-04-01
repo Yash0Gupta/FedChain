@@ -1,70 +1,80 @@
-# Getting Started with Create React App
+# Federated Learning Reward System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a decentralized federated learning reward system where users (trainers) can host machine learning models, train them with updated data, and earn rewards based on the improvement in performance. The platform integrates blockchain (using a smart contract written in Solidity), IPFS for decentralized file storage, and a Flask aggregator API for evaluating training value. The frontend is built with React using Create React App.
 
-## Available Scripts
+## Functionalities
 
-In the project directory, you can run:
+- **Host a New Model:**  
+  Users can host a model by providing its name, description, model file (pickle, joblib, or h5), and a test dataset (CSV or JSON). The model is uploaded to IPFS and registered on the blockchain with an initial reward pool.
 
-### `npm start`
+- **Train a Model:**  
+  Trainers can upload a new version of a hosted model. The backend aggregator API fetches the current global model and evaluates the updated model using an IPFS-stored test dataset. Based on the improvement in performance, a training value is calculated and, if positive, the smart contract rewards the trainer accordingly and updates the model on-chain.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Manage Models:**  
+  Model owners can deactivate or take down models. They can also add extra funds to the reward pool.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Blockchain and IPFS Integration:**  
+  The smart contract (Solidity) manages model data and rewards on a local blockchain (Ganache). IPFS is used for decentralized storage of model files and datasets.
 
-### `npm test`
+## Prerequisites
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Metamask Wallet:**  
+  Create a MetaMask wallet and configure it to connect to your local blockchain network (e.g., Ganache).
 
-### `npm run build`
+- **Ganache:**  
+  Download and start Ganache to run a local blockchain. Link Ganache to MetaMask by importing the network details.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **IPFS:**  
+  Install and start IPFS on your machine (ensure the IPFS daemon is running on `http://127.0.0.1:5001`). Configure the IPFS client if necessary.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## How to Run the Project
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. **Clone the Repository and Install Dependencies:**
+   - Open a terminal in the project directory and run:
+     ```
+     npm install
+     ```
 
-### `npm run eject`
+2. **Start Ganache and Configure MetaMask:**
+   - Start Ganache.
+   - In MetaMask, add a Custom RPC network with RPC URL `http://127.0.0.1:8545` (or your Ganache endpoint).
+   - Import or create an account in MetaMask with funds from Ganache.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+3. **Start the IPFS Daemon:**
+   - Open a terminal and run:
+     ```
+     ipfs daemon
+     ```
+   - Verify that IPFS is running on `http://127.0.0.1:5001`.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+4. **Deploy the Smart Contract:**
+   - Ensure the smart contract (located in `src/resources/FederatedLearning.sol`) is compiled and deployed to your Ganache network.
+   - Update the contract address in `src/contracts/FederatedLearning.js` if necessary.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+5. **Start the Aggregator API:**
+   - Navigate to the aggregator API directory (if separate) or run the API using:
+     ```
+     python src/aggregator_module/aggAPI.py
+     ```
+   - The API should run on port 5002 by default.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+6. **Start the React App:**
+   - In the project root, run:
+     ```
+     npm start
+     ```
+   - This will launch the frontend at [http://localhost:3000](http://localhost:3000).
 
 ## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- [Create React App Documentation](https://facebook.github.io/create-react-app/docs/getting-started)
+- [MetaMask Documentation](https://docs.metamask.io/)
+- [Ganache Documentation](https://trufflesuite.com/ganache/)
+- [IPFS Documentation](https://docs.ipfs.io/)
+- [Solidity Documentation](https://docs.soliditylang.org/)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Contributors
 
-### Code Splitting
+- **Yash Gupta** - [yash.cs21@bmsce.ac.in](mailto:yash.cs21@bmsce.ac.in)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Happy federated learning!
