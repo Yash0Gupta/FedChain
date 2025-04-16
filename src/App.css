@@ -1,38 +1,184 @@
-.App {
+body {
+  font-family: 'Poppins', sans-serif; /* Modern, clean font */
+  background-color: #f4f6f9; /* Light gray background for a professional look */
+  color: #333; /* Dark text for readability */
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #2c3e50; /* Dark navy color for heading */
+  font-size: 3rem; /* Bigger heading for emphasis */
+  font-weight: 700;
+}
+
+.card {
+  background-color: #ffffff; /* White background for cards */
+  border-radius: 12px; /* Slightly rounded corners */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+  padding: 24px;
+  margin-bottom: 30px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease; /* Adding transform for hover effect */
+}
+
+.card:hover {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15); /* Slightly stronger shadow on hover */
+  transform: translateY(-5px); /* Slight lift effect on hover */
+}
+
+h2, h3 {
+  color: #34495e; /* Dark blue-gray for subheadings */
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"],
+textarea {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd; /* Light gray border */
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #f9fafb; /* Light input background */
+  color: #333; /* Dark text in inputs */
+  transition: border-color 0.3s ease; /* Smooth border color transition */
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="file"]:focus,
+textarea:focus {
+  border-color: #3498db; /* Subtle blue border on focus */
+  outline: none;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+button {
+  padding: 12px 24px;
+  background-color: #3498db; /* Professional blue for buttons */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+  margin-right: 10px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #2980b9; /* Darker blue on hover */
+  transform: scale(1.05); /* Slight scale-up on hover */
+}
+
+button:disabled {
+  background-color: #95a5a6; /* Greyed out button when disabled */
+  cursor: not-allowed;
+}
+
+a {
+  color: #3498db; /* Blue color for links */
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: #2980b9; /* Slightly darker blue on hover */
+}
+
+.error {
+  color: #e74c3c; /* Red color for error messages */
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.success {
+  color: #2ecc71; /* Green for success messages */
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.loader {
+  color: #3498db; /* Blue loader */
+  font-size: 1.5rem;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.model-card {
+  background-color: #ffffff; /* White background for model cards */
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.model-card:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.actions {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  justify-content: space-between;
+  margin-top: 15px;
 }
 
-.App-link {
-  color: #61dafb;
+.actions input {
+  width: 70%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.actions button {
+  width: 28%;
+}
+
+.model-list {
+  list-style: none;
+  padding: 0;
+}
+
+.model-list li {
+  background-color: #ffffff; /* White background for model list items */
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.model-list li:hover {
+  background-color: #f9fafb; /* Light background change on hover */
+}
+
+.message {
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 10px;
+  border-radius: 8px;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+.message.error {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+}
+
+.message.success {
+  background-color: rgba(46, 204, 113, 0.1);
+  color: #2ecc71;
 }
