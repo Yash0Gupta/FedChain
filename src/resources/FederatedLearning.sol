@@ -80,6 +80,7 @@ contract FederatedLearning {
         require(_trainingValue > 0, "Training value must be greater than 0");
 
         uint256 reward = calculateReward(_modelId, _trainingValue);
+        
         require(
             reward <= model.rewardPool,
             "Insufficient reward pool for this training"
@@ -92,9 +93,10 @@ contract FederatedLearning {
         trainer.trainedModels.push(_modelId);
 
         emit ModelTrained(_modelId, msg.sender, reward);
-
+        // Convert the reward value to Wei as call.value function expects arguments in WEI not ETHER
+        uint256 rewardInWei = (reward)*((10)**(18)); // 1 Eth = 10^18 Wei
         // Transfer the reward to the trainer using call instead of transfer
-        (bool success, ) = msg.sender.call.value(reward)("");
+        (bool success, ) = msg.sender.call.value(rewardInWei)("");
         require(success, "Transfer failed.");
     }
 
