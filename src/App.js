@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import getWeb3 from './utils/web3';
 import getContract from './contracts/FederatedLearning';
 import { create } from 'ipfs-http-client';
+import './App.css';
+
 
 function App() {
   const [web3, setWeb3] = useState(null);
@@ -13,17 +15,16 @@ function App() {
   const [modelName, setModelName] = useState('');
   const [modelDescription, setModelDescription] = useState('');
   const [rewardPool, setRewardPool] = useState('');
-  const [testDataset, setTestDataset] = useState(null); // New state for test dataset
+  const [testDataset, setTestDataset] = useState(null);
   const [additionalFunds, setAdditionalFunds] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [modelFile, setModelFile] = useState(null);
   const [updatedFile, setUpdatedFile] = useState(null);
-  const [isLoading, setIsLoading] = useState(false); // Loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const ipfs = create({ url: 'http://127.0.0.1:5001' });
 
-  // Initialize web3, contract, and account
   useEffect(() => {
     const init = async () => {
       try {
@@ -35,7 +36,6 @@ function App() {
         setContract(contractInstance);
         setAccount(accounts[0]);
 
-        // Fetch trainer info and models after setting up
         await fetchTrainerInfo(accounts[0], contractInstance);
         await fetchModels(contractInstance);
       } catch (error) {
@@ -45,14 +45,7 @@ function App() {
     };
 
     init();
-
-    // // Refresh model list periodically
-    // const interval = setInterval(() => {
-    //   if (contract) fetchModels(contract);
-    // }, 10000);
-
-    // return () => clearInterval(interval); // Cleanup interval on component unmount
-  }, [contract]); // Dependency on contract
+  }, [contract]);
 
   const fetchModels = async (contractInstance = contract) => {
     if (!contractInstance) return;
@@ -96,7 +89,7 @@ function App() {
   const uploadToIPFS = async (file) => {
     try {
       const added = await ipfs.add(file);
-      return added.path; // Return the IPFS hash
+      return added.path;
     } catch (error) {
       console.error("Error uploading file to IPFS:", error);
       throw new Error("Failed to upload file to IPFS.");
@@ -114,13 +107,9 @@ function App() {
       setErrorMessage('');
       setSuccessMessage('');
 
-      // Upload model file to IPFS
       const modelFileHash = await uploadToIPFS(modelFile);
-
-      // Upload test dataset to IPFS
       const testDatasetHash = await uploadToIPFS(testDataset);
 
-      // Call the smart contract to host the model
       await contract.methods.createModel(modelName, modelDescription, modelFileHash, testDatasetHash).send({
         from: account,
         value: web3.utils.toWei(rewardPool, 'ether'),
@@ -130,7 +119,7 @@ function App() {
       setModelDescription('');
       setRewardPool('');
       setModelFile(null);
-      setTestDataset(null); // Reset test dataset
+      setTestDataset(null);
       setSuccessMessage('Model hosted successfully!');
       fetchModels();
     } catch (error) {
@@ -180,67 +169,33 @@ function App() {
     }
   };
 
-  // const trainModel = async (modelId) => {
-  //   if (!updatedFile) {
-  //     setErrorMessage("Please upload the updated model file.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const updatedFileHash = await uploadToIPFS(updatedFile);
-  //     await contract.methods.trainModel(modelId, updatedFileHash).send({ from: account });
-  //     setUpdatedFile(null);
-  //     fetchTrainerInfo();
-  //     fetchModels();
-  //   } catch (error) {
-  //     console.error("Error training model:", error);
-  //     setErrorMessage("Error training model.");
-  //   }
-  // };
-
   const trainModel = async (modelId) => {
     if (!updatedFile) {
       setErrorMessage("Please upload the updated model file.");
       return;
     }
-  
+
     try {
       setIsLoading(true);
-      
-      // 1. Upload the model to IPFS
+
       const updatedFileHash = await uploadToIPFS(updatedFile);
-      
-      // 2. Get the global model hash and test dataset hash
       const model = await contract.methods.models(modelId).call();
       const globalModelHash = model.fileHash;
       const testDatasetHash = model.testDatasetHash;
-      
-      // 3. Call the aggregator API to calculate the training value
+
       const response = await fetch('http://localhost:5002/calculate-training-value', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          modelId,
-          globalModelHash,
-          updatedModelHash: updatedFileHash,
-          testDatasetHash
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ modelId, globalModelHash, updatedModelHash: updatedFileHash, testDatasetHash })
       });
-      
+
       const result = await response.json();
-      
-      if (result.error) {
-        throw new Error(result.error);
-      }
-      
-      // 4. Check if the model improves performance
+      if (result.error) throw new Error(result.error);
+
       if (result.shouldUpdate) {
-        // 5. Call the smart contract to train the model with the calculated value
         await contract.methods.trainModel(modelId, result.trainingValue).send({ from: account });
         await contract.methods.updateModel(modelId, updatedFileHash).send({ from: account });
-        
+
         setSuccessMessage(`Model trained successfully! Training value: ${result.trainingValue}`);
       } else {
         setErrorMessage("Your model didn't improve performance. No training value awarded.");
@@ -257,89 +212,71 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Federated Learning Reward System</h1>
-      <p>Connected Account: {account}</p>
 
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+      {errorMessage && <p className="error">{errorMessage}</p>}
+      {successMessage && <p className="success">{successMessage}</p>}
 
-      <h2>Available Models</h2>
-      {isLoading ? (
-        <p>Loading models...</p>
-      ) : (
-        <ul>
-          {models.map((model) => (
-            <li key={model.id}>
+      <div className="card">
+        <p><strong>Connected Account:</strong> {account}</p>
+        <p><strong>Total Rewards:</strong> {totalRewards} ETH</p>
+      </div>
+
+      <div className="card">
+        <h2>Available Models</h2>
+        {isLoading ? (
+          <p>Loading models...</p>
+        ) : models.length > 0 ? (
+          models.map((model) => (
+            <div key={model.id} className="card">
               <h3>{model.name}</h3>
               <p>{model.description}</p>
-              <p>Reward Pool: {web3.utils.fromWei(model.rewardPool, 'ether')} ETH</p>
-              <a href={`https://ipfs.io/ipfs/${model.fileHash}`} download>Download Model Architecture</a>
+              <p><strong>Reward Pool:</strong> {web3.utils.fromWei(model.rewardPool, 'ether')} ETH</p>
+              <a href={`https://ipfs.io/ipfs/${model.fileHash}`} target="_blank" rel="noopener noreferrer">Download Model Architecture</a>
+              <div>
+                <input type="number" placeholder="Add Funds (ETH)" value={additionalFunds} onChange={(e) => setAdditionalFunds(e.target.value)} />
+                <button onClick={() => addFundsToModel(model.id)}>Add Funds</button>
+              </div>
+              <div>
+                <input type="file" accept=".pkl,.joblib,.h5" onChange={(e) => setUpdatedFile(e.target.files[0])} />
+                <button onClick={() => trainModel(model.id)}>Upload Updated Model</button>
+              </div>
               <button onClick={() => deactivateModel(model.id)}>Deactivate</button>
               <button onClick={() => takeDownModel(model.id)}>Take Down</button>
-              <input
-                type="number"
-                placeholder="Add Funds (ETH)"
-                value={additionalFunds}
-                onChange={(e) => setAdditionalFunds(e.target.value)}
-              />
-              <button onClick={() => addFundsToModel(model.id)}>Add Funds</button>
-              <input type="file" accept=".pkl,.joblib,.h5" onChange={(e) => setUpdatedFile(e.target.files[0])} />
-              <button onClick={() => trainModel(model.id)}>Upload Updated Model</button>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <h2>Host a New Model</h2>
-      <form onSubmit={(e) => { e.preventDefault(); hostModel(); }}>
-        <input
-          type="text"
-          placeholder="Model Name"
-          value={modelName}
-          onChange={(e) => setModelName(e.target.value)}
-          required
-        />
-        <textarea
-          placeholder="Model Description"
-          value={modelDescription}
-          onChange={(e) => setModelDescription(e.target.value)}
-          required
-        />
-        <input
-          type="number"
-          placeholder="Reward Pool (ETH)"
-          value={rewardPool}
-          onChange={(e) => setRewardPool(e.target.value)}
-          required
-        />
-        <label htmlFor="modelFile">Upload Model File (.pkl, .joblib, .h5):</label>
-        <input
-          type="file"
-          accept=".pkl,.joblib,.h5"
-          onChange={(e) => setModelFile(e.target.files[0])}
-          required
-        />
-        <label htmlFor="testDataset">Upload Test Dataset (.csv, .json):</label>
-        <input
-          type="file"
-          accept=".csv,.json"
-          onChange={(e) => setTestDataset(e.target.files[0])}
-          required
-        />
-        <button type="submit">Host Model</button>
-      </form>
-
-      <h3>Trained Models:</h3>
-      <ul>
-        {trainedModels.length > 0 ? (
-          trainedModels.map((modelId, index) => (
-            <li key={index}>Model ID: {modelId}</li>
+            </div>
           ))
+        ) : (
+          <p>No active models found.</p>
+        )}
+      </div>
+
+      <div className="card">
+        <h2>Host a New Model</h2>
+        <form onSubmit={(e) => { e.preventDefault(); hostModel(); }}>
+          <input type="text" placeholder="Model Name" value={modelName} onChange={(e) => setModelName(e.target.value)} required />
+          <textarea placeholder="Model Description" value={modelDescription} onChange={(e) => setModelDescription(e.target.value)} required />
+          <input type="number" placeholder="Reward Pool (ETH)" value={rewardPool} onChange={(e) => setRewardPool(e.target.value)} required />
+          <label>Upload Model File (.pkl, .joblib, .h5):</label>
+          <input type="file" accept=".pkl,.joblib,.h5" onChange={(e) => setModelFile(e.target.files[0])} required />
+          <label>Upload Test Dataset (.csv, .json):</label>
+          <input type="file" accept=".csv,.json" onChange={(e) => setTestDataset(e.target.files[0])} required />
+          <button type="submit">Host Model</button>
+        </form>
+      </div>
+
+      <div className="card">
+        <h3>Trained Models:</h3>
+        {trainedModels.length > 0 ? (
+          <ul>
+            {trainedModels.map((modelId, index) => (
+              <li key={index}>Model ID: {modelId}</li>
+            ))}
+          </ul>
         ) : (
           <p>No models trained yet.</p>
         )}
-      </ul>
+      </div>
     </div>
   );
 }
