@@ -18,8 +18,9 @@ This project is a decentralized federated learning reward system where users (tr
 
 ## 🎥 Video Demonstration
 
-Watch the full project Demonstration:  
-[▶️ Click to Watch](project_demonstration.mp4)
+Watch the full project Demonstration here:  
+
+https://github.com/user-attachments/assets/e05ffb15-e338-4526-aea1-b8cbd7c218bc
 
 ## Prerequisites
 
