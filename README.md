@@ -16,6 +16,12 @@ This project is a decentralized federated learning reward system where users (tr
 - **Blockchain and IPFS Integration:**  
   The smart contract (Solidity) manages model data and rewards on a local blockchain (Ganache). IPFS is used for decentralized storage of model files and datasets.
 
+## 🎥 Video Demonstration
+
+Watch the full project Demonstration here:  
+
+https://github.com/user-attachments/assets/e05ffb15-e338-4526-aea1-b8cbd7c218bc
+
 ## Prerequisites
 
 - **Metamask Wallet:**  
